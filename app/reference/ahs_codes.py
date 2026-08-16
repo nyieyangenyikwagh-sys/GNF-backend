@@ -1,0 +1,1 @@
+AHS_SERVICE_CODES={"03.03A":"Office visit - general assessment","03.04A":"Office visit - comprehensive assessment","03.05A":"Counselling, per unit","03.08A":"Telehealth/virtual visit premium","13.99A":"Consultation, specific"}

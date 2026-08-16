@@ -1,0 +1,6 @@
+from abc import ABC,abstractmethod
+class ProvincialBillingEngine(ABC):
+ @abstractmethod
+ def format_submission(self,claim)->bytes: ...
+ @abstractmethod
+ def verify_eligibility_format(self,health_card:str)->bool: ...
