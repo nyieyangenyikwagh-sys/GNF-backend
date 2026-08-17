@@ -1,0 +1,2 @@
+import type { RuleViolation } from "@/lib/types";
+export default function RulesViolations({ violations }: { violations: RuleViolation[] }) { if (!violations.length) return <p className="rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800">No rule violations were returned.</p>; return <div className="space-y-2">{violations.map((v) => <div key={`${v.code}-${v.message}`} className="rounded-lg border border-red-200 bg-red-50 p-3"><strong className="text-red-800">{v.code}</strong><p className="text-sm text-red-700">{v.message}</p></div>)}</div>; }

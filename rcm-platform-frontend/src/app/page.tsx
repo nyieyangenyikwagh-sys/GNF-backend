@@ -1,0 +1,5 @@
+"use client";
+import Link from "next/link";
+import { useAuthStore } from "@/lib/store";
+const actions = [["New patient", "/patients/create", "Register demographic and insurance information."], ["New claim", "/claims/create", "Verify coverage and submit a professional claim."], ["Analytics", "/analytics", "Review payer denials and reconciliation performance."]];
+export default function Home() { const user = useAuthStore((s) => s.user); return <><div className="mb-8"><p className="text-sm font-semibold text-cyan-700">WELCOME BACK{user?.email ? `, ${user.email}` : ""}</p><h1 className="mt-1 text-3xl font-bold">Claims command center</h1><p className="mt-2 text-slate-600">Submit, resolve, and reconcile healthcare claims in one secure workspace.</p></div><div className="grid gap-4 md:grid-cols-3">{actions.map(([title, href, text]) => <Link href={href} key={href} className="rounded-xl border bg-white p-5 shadow-sm transition hover:border-cyan-400 hover:shadow"><h2 className="font-bold">{title}</h2><p className="mt-2 text-sm text-slate-600">{text}</p><span className="mt-5 inline-block text-sm font-semibold text-cyan-700">Open →</span></Link>)}</div></>; }
