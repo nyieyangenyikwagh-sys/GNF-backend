@@ -1,3 +1,6 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -11,18 +14,26 @@ from app.api.v1 import (
     analytics,
 )
 
-from app.models import Base
-from app.core.database import engine
+from app.core.database import check_database_connection
+
+logger = logging.getLogger(__name__)
 
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    try:
+        check_database_connection()
+    except Exception:
+        logger.exception("PostgreSQL is unavailable. Run migrations after the database is reachable.")
+        raise
+    yield
 
 
 # Create FastAPI application
 app = FastAPI(
     title="Canadian Health Claims Platform",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 

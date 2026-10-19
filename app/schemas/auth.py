@@ -1,5 +1,11 @@
-from pydantic import BaseModel, EmailStr
-class UserCreate(BaseModel): email: EmailStr; password: str; role: str="biller"
+from typing import Literal
+
+from pydantic import BaseModel, EmailStr, Field
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+    role: Literal["biller", "analyst"] = "biller"
 class UserOut(BaseModel):
     id:int; email:EmailStr; role:str
     model_config={"from_attributes":True}

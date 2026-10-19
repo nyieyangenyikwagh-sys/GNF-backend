@@ -1,24 +1,43 @@
 services:
+
   api:
     build: .
-    ports: ["8000:8000"]
-    volumes: [".:/app"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ".:/app"
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql://rcm_user:rcm_pass@postgres:5432/rcm_db
+      DATABASE_URL: postgresql+psycopg2://rcm:rcm@postgres:5432/rcm
       REDIS_URL: redis://redis:6379
-      SECRET_KEY: dev-secret-change-in-production
-    depends_on: [postgres, redis]
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $${PORT:-8000} --reload --reload-dir /app"
+
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: rcm_user
-      POSTGRES_PASSWORD: rcm_pass
-      POSTGRES_DB: rcm_db
-    ports: ["5432:5432"]
-    volumes: ["pgdata:/var/lib/postgresql/data"]
+      POSTGRES_DB: rcm
+      POSTGRES_USER: rcm
+      POSTGRES_PASSWORD: rcm
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rcm -d rcm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   redis:
     image: redis:7
-    ports: ["6379:6379"]
+    ports:
+      - "6379:6379"
+
 volumes:
-  pgdata:
+  postgres_data:
