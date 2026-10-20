@@ -1,0 +1,28 @@
+services:
+  api:
+    environment:
+      ENVIRONMENT: benchmark
+      RULES_ENGINE_URL: http://dependency-stubs:8090/rules
+      FRAUD_ENGINE_URL: http://dependency-stubs:8090/fraud
+      SERVICE_TOKEN: benchmark-service-token
+      DEPENDENCY_TIMEOUT_SECONDS: 0.5
+      DEPENDENCY_MAX_RETRIES: 1
+      RECOVERY_INTERVAL_SECONDS: 2
+    depends_on:
+      dependency-stubs:
+        condition: service_healthy
+    command: sh -c "alembic upgrade head && python scripts/seed_data.py && uvicorn app.main:app --host 0.0.0.0 --port $${PORT:-8000}"
+
+  dependency-stubs:
+    build: .
+    command: uvicorn app:app --app-dir claims-benchmark/stubs --host 0.0.0.0 --port 8090
+    environment:
+      STUB_CONTROL_TOKEN: benchmark-control
+      SERVICE_TOKEN: benchmark-service-token
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    ports:
+      - "8090:8090"

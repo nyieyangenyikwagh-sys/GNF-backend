@@ -1,0 +1,10 @@
+{
+  "base_url": "http://localhost:8000",
+  "stub_url": "http://localhost:8090",
+  "stub_control_token": "benchmark-control",
+  "password": "Benchmark123!",
+  "plan_id": 1,
+  "mode": "isolated",
+  "request_timeout_seconds": 5,
+  "performance_requests": 25
+}
