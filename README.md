@@ -16,6 +16,19 @@ Set `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1` in `rcm-platform-fro
 
 For Railway, supply `DATABASE_URL` using Railway PostgreSQL's connection string, `SECRET_KEY`, `REDIS_URL` (if caching is enabled), and `PORT` (provided by Railway). Run `alembic upgrade head` as a release/pre-deploy step. `pgvector` can later be enabled in this PostgreSQL database for RAG embeddings; no RAG or vector dependency is installed yet.
 
+## Claims Engine benchmark
+
+The behavioral benchmark is in `claims-benchmark/`; the inspected inventory and current execution gaps are in `docs/claims-engine-inventory.md` and `docs/integration-gaps.md`. Although the source benchmark is titled NestJS, this implementation targets the actual FastAPI service and preserves the same acceptance criteria.
+
+Run the isolated stack with both Compose files, then execute the runner:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.benchmark.yml up -d --build
+python claims-benchmark/run_claims_benchmark.py
+```
+
+The runner refuses any target whose `/health` response does not contain `"environment": "benchmark"`. Reports are written under `claims-benchmark/results/<run-id>/`; passed, failed, and could-not-run outcomes are kept separate. `RULES_ENGINE_URL` and `FRAUD_ENGINE_URL` must be HTTP assessment endpoints. Their database DSNs remain private to those services and are never used by Claims.
+
 ### Migrating existing Supabase data
 
 Do not delete the Supabase project. Export its PostgreSQL data, review the exported schema against `alembic/versions/0001_initial_schema.py`, load it into the target PostgreSQL database, then mark or apply the Alembic revision as appropriate. Password hashes managed by Supabase Auth require an explicit user-auth migration or password-reset flow; they should not be copied blindly.

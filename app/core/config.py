@@ -6,8 +6,18 @@ class Settings(BaseSettings):
     REDIS_URL: str | None = None
     SECRET_KEY: str = "change-me"
     ALGORITHM: str = "HS256"
+    JWT_ISSUER: str = "gnf-claims"
+    JWT_AUDIENCE: str = "gnf-api"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     ENVIRONMENT: str = "development"
+    RULES_ENGINE_URL: str | None = None
+    FRAUD_ENGINE_URL: str | None = None
+    SERVICE_TOKEN: str | None = None
+    DEPENDENCY_TIMEOUT_SECONDS: float = 2.0
+    DEPENDENCY_MAX_RETRIES: int = 2
+    RECOVERY_INTERVAL_SECONDS: int = 30
+    RECOVERY_MAX_ATTEMPTS: int = 10
+    MAX_REQUEST_BYTES: int = 1_048_576
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @field_validator("DATABASE_URL")
